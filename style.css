@@ -2,6 +2,10 @@ body {
   margin: 0
 }
 
+body {
+  overflow: hidden; 
+}
+
 .container {
   display: -webkit-inline-box;
   margin-left: 5%;
@@ -12,19 +16,39 @@ body {
   margin-top: 5%;
 }
 
-.container-puzzle-pieces {
+.container-puzzle-pieces-small {
   display: flex;
   flex-wrap: wrap;
   margin: 5% 20% 0 20%;
 }
 
-.container-puzzle-pieces > * {
+.container-puzzle-pieces-big {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 5% 50% 0 20%;
+}
+
+.container-puzzle-pieces-small  > * {
     margin: 0% 7% ;
 }
 
-.container-puzzle-board {
+.container-puzzle-pieces-big  > * {
+  margin: 0% 2% ;
+}
+
+
+.container-puzzle-board-small {
   width: 350px;
   height: 350px;
+  border: solid 1px black;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 2%;
+}
+
+.container-puzzle-board-big {
+  width: 400px;
+  height: 400px;
   border: solid 1px black;
   display: flex;
   flex-wrap: wrap;
@@ -42,9 +66,14 @@ body {
   cursor: move;
 }
 
-.draggable-after-drop {
+.draggable-after-drop-small {
   margin-left: 10%;
   margin-top: 6%;
+}
+
+.draggable-after-drop-big {
+  margin-left: 5%;
+  margin-top: 3%;
 }
 
 .puzzle-piece-after-drop {
@@ -57,7 +86,7 @@ body {
   opacity: 0.5;
 }
 
-.drop-house {
+.drop-house-small {
   margin-left:10%;
   margin-top: 6%;
   width: 70px;
@@ -65,8 +94,21 @@ body {
   border: solid 1px black;
 }
 
+.drop-house-big {
+  margin-left:5%;
+  margin-top: 3%;
+  width: 70px;
+  height: 70px;
+  border: solid 1px black;
+}
+
 .hide {
   display: none;
+}
+
+h3 {
+  text-align: center;
+  color: cadetblue;
 }
 
 

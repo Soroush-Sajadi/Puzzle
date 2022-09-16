@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------
 //declarations 
-const container = document.querySelector('.container')
+const main = document.querySelector('main')
+const panelConatainer = document.querySelector('.panel-container')
 const shuffleButton = document.querySelector('#shuffle')
 const levelInput = document.querySelector('#level')
 const level = levelInput.options[levelInput.selectedIndex].text
@@ -9,26 +10,25 @@ const level = levelInput.options[levelInput.selectedIndex].text
 let puzzlePiecesNumber = Number(level)
 let puzzlePieces = []
 let puzzleBoardHouses = []
-let htmlContainer = ''
+//let htmlContainer = ''
 
 //-------------------------------------------------------------------------------------------------------------------
 //Level panel
 
 levelInput.addEventListener('change', e => {
+  
   puzzlePieces = []
   puzzleBoardHouses = []
-  const newLevel = Number(e.target.value)
-  removeItem(container, newLevel)
+  puzzlePiecesNumber = Number(e.target.value)
+  makePuzzelBoardObject(puzzlePiecesNumber)
+  makePuzzelPiecesObject(puzzlePiecesNumber)
+  createBoard(puzzlePieces, puzzleBoardHouses, puzzlePiecesNumber)
+  dragStart(document.querySelectorAll('.draggable'))
+  dragOver(document.querySelectorAll('.drop-house'))
+  dragEnd(document.querySelectorAll('.draggable'))
+
 })
-
-const removeItem = (element, newLevel) => {
-  while(element.firstChild) {
-    element.firstChild.remove();
-  }
-  makePuzzelBoardObject(newLevel)
-  makePuzzelPiecesObject(newLevel)
-}
-
+console.log(puzzlePiecesNumber)
 
 //----------------------------------------------------------------------------------------------------------------------
 //Crating puzzle object
@@ -38,7 +38,6 @@ const makePuzzelPiecesObject = (puzzlePiecesNumber) => {
     const puzzelPiece = {id: `id${i}`, onBoard: false, text: i, isPlaced: false}
     puzzlePieces.push(puzzelPiece)
   }
-  createPuzzleContainer(puzzlePieces)
 }
 
 
@@ -47,7 +46,6 @@ const makePuzzelBoardObject = (puzzlePiecesNumber) => {
     const puzzleBoardHouse = {id: `id${i}`, text: i}
     puzzleBoardHouses.push(puzzleBoardHouse)
   }
-  createPuzzleBoard(puzzleBoardHouses)
 }
 
 shuffleButton.addEventListener("click",() => {
@@ -58,28 +56,31 @@ shuffleButton.addEventListener("click",() => {
 //----------------------------------------------------------------------------------------------------------------------
 //creating puzzle dom
 
-const createPuzzleBoard = (puzzlePieces) => {
-  htmlContainer +=  `<div class="container-puzzle-board" id="container-puzzle-board">
-  ${puzzlePieces.map((puzzelPiece) => {
-    return  `<img class="drop-house" src="Image/question-mark.png" id=${puzzelPiece.id}>` 
-   })}
-  </div>`
 
-  container.innerHTML = htmlContainer
-}
 
-const createPuzzleContainer = (puzzlePieces) => {
+const createBoard = (puzzlePieces, puzzleHouse, level) => {
+  const easyLevel = puzzlePiecesNumber && puzzlePiecesNumber === 9
   puzzlePieces.sort(() => Math.random() - 0.5);
-  htmlContainer += `<div class="container-puzzle-pieces" id="container-puzzle-pieces">
-     ${puzzlePieces.map((puzzelPiece) => {
-      return  `<p 
-        class="draggable" draggable="true" text=${puzzelPiece.text} 
-        onBoard=${puzzelPiece.onBoard} id=${puzzelPiece.id}> ${puzzelPiece.text}
-      </p>` 
-     })}
+
+  let boardContainer = ""
+  boardContainer += `<div class="container">
+    <div class=${level === 9 ? "container-puzzle-board-small": "container-puzzle-board-big" } id="container-puzzle-board">
+      ${puzzleHouse.map((puzzelPiece) => {
+        return `<img class="drop-house ${easyLevel ? 'drop-house-small': 'drop-house-big'}"
+        src="Image/question-mark.png" id=${puzzelPiece.id}>` 
+      })}
+    </div>
+    <div class=${easyLevel ? "container-puzzle-pieces-small": "container-puzzle-pieces-big" } id="container-puzzle-pieces">
+      ${puzzlePieces.map((puzzelPiece) => {
+        return  `<p 
+          class="draggable" draggable="true" text=${puzzelPiece.text} 
+          onBoard=${puzzelPiece.onBoard} id=${puzzelPiece.id}> ${puzzelPiece.text}
+        </p>` 
+      })}
+    </div>
   </div>`
-  const html = htmlContainer.replace(/,/g, '')
-  container.innerHTML = html
+  const html = boardContainer.replace(/,/g, '')
+  main.innerHTML = html
 }
 
 
@@ -109,7 +110,6 @@ const dragOver = (dropHouses) => {
       console.log(dropHouse)
 
       const dragged = document.querySelector('.dragging')
-      dragged.classList.remove('.dragging')
 
       if(dropHouse && dragged) {
         event.preventDefault()
@@ -122,6 +122,8 @@ const dragOver = (dropHouses) => {
 
 const dragDrop = (dropHouse, dragged) => {
   dropHouse.addEventListener('drop', event => {
+    dragged.classList.remove('dragging')
+
     replacePuzzle(dropHouse, dragged)
     if(dropHouse.id === dragged.id) {
       modifingPuzzlePieces(dragged.id)
@@ -131,12 +133,12 @@ const dragDrop = (dropHouse, dragged) => {
 
 
 const replacePuzzle = (dropHouse, dragged) => {
+  const easyLevel = puzzlePiecesNumber && puzzlePiecesNumber === 9 
   const clone = dragged.cloneNode(true);
   clone.setAttribute('onBoard', true)
-  clone.className = ""
-  clone.classList.add('drop-house','draggable-after-drop', 'draggable')
+  const draggAbleAfter = easyLevel ? 'draggable-after-drop-small': 'draggable-after-drop-big'
+  clone.classList.add('drop-house',draggAbleAfter , 'draggable')
   dragged.innerHTML = ""
-  dragged.className= ""
   dragged.classList.add('draggable', 'puzzle-piece-after-drop')
   dropHouse.replaceWith(clone)
 }
@@ -155,19 +157,21 @@ const modifingPuzzlePieces = (pieceId) => {
 
 const getWinner = (puzzlePieces) => {
   const winner = puzzlePieces.every(puzzlePiece => puzzlePiece.isPlaced )
+  console.log(winner)
   if (winner) {
-    htmlContainer += '<h3>Congrats You Won! You Must Be Genius or SMT!</h3>'
+    panelConatainer.innerHTML ='<h3>Congrats You Won! You Must Be Genius or SMT!</h3>'
   }
 }
+
+
 //-----------------------------------------------------------------------------------------------------------------------
 window.onload = () => {
   makePuzzelBoardObject(puzzlePiecesNumber)
   makePuzzelPiecesObject(puzzlePiecesNumber)
+  createBoard(puzzlePieces, puzzleBoardHouses, puzzlePiecesNumber)
   dragStart(document.querySelectorAll('.draggable'))
   dragOver(document.querySelectorAll('.drop-house'))
   dragEnd(document.querySelectorAll('.draggable'))
-  dragDrop()
-
 }
 
 
