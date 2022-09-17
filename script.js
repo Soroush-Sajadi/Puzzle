@@ -28,7 +28,6 @@ levelInput.addEventListener('change', e => {
   dragEnd(document.querySelectorAll('.draggable'))
 
 })
-console.log(puzzlePiecesNumber)
 
 //----------------------------------------------------------------------------------------------------------------------
 //Crating puzzle object
@@ -88,7 +87,7 @@ const createBoard = (puzzlePieces, puzzleHouse, level) => {
 // Drag functionality
 
 const dragStart = (draggables) => {
-  draggables.forEach(draggable => {
+ draggables.forEach(draggable => {
     draggable.addEventListener('dragstart', () => {
      draggable.classList.add('dragging')
     })
@@ -107,10 +106,7 @@ const dragEnd = (draggables) => {
 const dragOver = (dropHouses) => {
   dropHouses.forEach(dropHouse => {
     dropHouse.addEventListener('dragover', event => {
-      console.log(dropHouse)
-
       const dragged = document.querySelector('.dragging')
-
       if(dropHouse && dragged) {
         event.preventDefault()
         dragDrop(dropHouse, dragged)
@@ -127,23 +123,28 @@ const dragDrop = (dropHouse, dragged) => {
     replacePuzzle(dropHouse, dragged)
     if(dropHouse.id === dragged.id) {
       modifingPuzzlePieces(dragged.id)
-    }  
+    }
   })
 }
 
 
 const replacePuzzle = (dropHouse, dragged) => {
   const easyLevel = puzzlePiecesNumber && puzzlePiecesNumber === 9 
+  const draggAbleAfter = easyLevel ? 'draggable-after-drop-small': 'draggable-after-drop-big'
+
+  const newPuzzle = document.createElement("div");
+  newPuzzle.classList.add('puzzle-size', 'puzzle-piece-after-drop', 'drop-house')
+
   const clone = dragged.cloneNode(true);
   clone.setAttribute('onBoard', true)
-  const draggAbleAfter = easyLevel ? 'draggable-after-drop-small': 'draggable-after-drop-big'
+  clone.innerHTML = dragged.getAttribute('text')
   clone.classList.add('drop-house',draggAbleAfter , 'draggable')
-  dragged.innerHTML = ""
-  dragged.classList.add('draggable', 'puzzle-piece-after-drop')
+  clone.classList.remove('puzzle-piece-after-drop')
   dropHouse.replaceWith(clone)
+  dragged.replaceWith(newPuzzle)
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------
 // Finding the Winner!
 
 
@@ -152,12 +153,12 @@ const modifingPuzzlePieces = (pieceId) => {
     if(puzzelPiece.id === pieceId)
     puzzelPiece.isPlaced = true
   })
+
   getWinner(puzzlePieces)
 }
 
 const getWinner = (puzzlePieces) => {
   const winner = puzzlePieces.every(puzzlePiece => puzzlePiece.isPlaced )
-  console.log(winner)
   if (winner) {
     panelConatainer.innerHTML ='<h3>Congrats You Won! You Must Be Genius or SMT!</h3>'
   }

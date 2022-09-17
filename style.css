@@ -86,6 +86,11 @@ body {
   opacity: 0.5;
 }
 
+.puzzle-size {
+  width: 70px;
+  height: 70px;
+}
+
 .drop-house-small {
   margin-left:10%;
   margin-top: 6%;
